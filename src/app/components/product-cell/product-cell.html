@@ -1,0 +1,8 @@
+<a class="cell" [routerLink]="['/product', product()._id]">
+  @if (product().images.length > 0) {
+    <img [src]="product().images[0]" [alt]="product().name" />
+  } @else {
+    <div class="placeholder" role="img" [attr.aria-label]="product().name + ' (no image)'"></div>
+  }
+  <span class="name">{{ product().name }}</span>
+</a>

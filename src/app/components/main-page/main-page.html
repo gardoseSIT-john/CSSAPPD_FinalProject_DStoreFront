@@ -1,0 +1,18 @@
+<header class="search">
+  <label for="search">Search products</label>
+  <input
+    id="search"
+    type="search"
+    placeholder="Search by name or tag"
+    [value]="query()"
+    (input)="onSearch($event)"
+  />
+</header>
+
+<main class="grid">
+  @for (p of filtered(); track p._id) {
+    <app-product-cell [product]="p" />
+  } @empty {
+    <p>No products match your search.</p>
+  }
+</main>

@@ -1,0 +1,59 @@
+<dialog #dlg aria-labelledby="order-title" (close)="closed.emit()">
+  <h2 id="order-title">
+    {{ placed() ? 'Order placed' : 'Order: ' + product().name }}
+  </h2>
+
+  @if (placed()) {
+    <p>Your order was sent. We'll bring it to the drop-off point you gave.</p>
+    <button type="button" (click)="close()">Close</button>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      @if (product().size.length > 0) {
+        <div class="field">
+          <label for="size">Size</label>
+          <select id="size" formControlName="size">
+            <option value="">Choose a size</option>
+            @for (s of product().size; track s) {
+              <option [value]="s">{{ s }}</option>
+            }
+          </select>
+          @if (form.controls.size.touched && !form.controls.size.value) {
+            <p class="error" role="alert">Please choose a size.</p>
+          }
+        </div>
+      }
+
+      <div class="field">
+        <label for="customerName">Your name</label>
+        <input id="customerName" type="text" formControlName="customerName" autocomplete="name" />
+        @if (form.controls.customerName.touched && form.controls.customerName.invalid) {
+          <p class="error" role="alert">Name is required.</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="contact">Contact (phone or email)</label>
+        <input id="contact" type="text" formControlName="contact" />
+      </div>
+
+      <div class="field">
+        <label for="dropOff">Drop-off point</label>
+        <input id="dropOff" type="text" formControlName="dropOff" />
+        @if (form.controls.dropOff.touched && form.controls.dropOff.invalid) {
+          <p class="error" role="alert">Drop-off point is required.</p>
+        }
+      </div>
+
+      @if (error()) {
+        <p class="error" role="alert">{{ error() }}</p>
+      }
+
+      <div class="actions">
+        <button type="button" (click)="close()">Back</button>
+        <button type="submit" [disabled]="submitting()">
+          {{ submitting() ? 'Sending…' : 'Confirm order' }}
+        </button>
+      </div>
+    </form>
+  }
+</dialog>
