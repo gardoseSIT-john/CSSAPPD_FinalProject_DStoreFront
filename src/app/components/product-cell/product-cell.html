@@ -2,7 +2,15 @@
   @if (product().images.length > 0) {
     <img [src]="product().images[0]" [alt]="product().name" />
   } @else {
-    <div class="placeholder" role="img" [attr.aria-label]="product().name + ' (no image)'"></div>
+    <div class="placeholder" role="img" aria-label="No image available"></div>
   }
-  <span class="name">{{ product().name }}</span>
+
+  @if (product().size.length > 0) {
+    <span class="size">{{ product().size.join(', ') }}</span>
+  }
+
+  <div class="row">
+    <span class="name">{{ product().name }}</span>
+    <span class="price">{{ product().price | currency: 'PHP' }}</span>
+  </div>
 </a>
