@@ -23,6 +23,14 @@ app.post('/api/orders', (req, res) => {
   res.status(201).json({ _id: 'o1', status: 'pending', createdAt: new Date().toISOString(), ...req.body });
 });
 
+//For testing the password thng
+app.use(express.json()); 
+app.post('/api/login', (req, res) => {
+  const { username, password } = req.body;
+  if (username === 'admin' && password === 'admin') return res.json({ token: 'mock-token' });
+  res.status(401).json({ error: 'Invalid credentials' });
+});
+
 
 
 app.listen(3000, () => console.log('Mock API on :3000'));

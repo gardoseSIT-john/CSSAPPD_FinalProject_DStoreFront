@@ -1,0 +1,31 @@
+<main class="login">
+  <h1>Admin login</h1>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="field">
+      <label for="username">Username</label>
+      <input id="username" type="text" formControlName="username" autocomplete="username" />
+      @if (form.controls.username.touched && form.controls.username.invalid) {
+        <p class="error" role="alert">Username is required.</p>
+      }
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <input id="password" type="password" formControlName="password" autocomplete="current-password" />
+      @if (form.controls.password.touched && form.controls.password.invalid) {
+        <p class="error" role="alert">Password is required.</p>
+      }
+    </div>
+
+    @if (error()) {
+      <p class="error" role="alert">{{ error() }}</p>
+    }
+
+    <button type="submit" [disabled]="submitting()">
+      {{ submitting() ? 'Signing in…' : 'Sign in' }}
+    </button>
+  </form>
+
+  <p><a routerLink="/">← Back to shop</a></p>
+</main>

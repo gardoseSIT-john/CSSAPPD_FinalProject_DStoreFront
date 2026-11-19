@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+//Product Shi
 const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
   size: [String],
@@ -22,4 +23,16 @@ const orderSchema = new mongoose.Schema({
 module.exports = {
   Product: mongoose.model('Product', productSchema),
   Order: mongoose.model('Order', orderSchema),
+};
+
+//Admin Shi
+const adminSchema = new mongoose.Schema({
+  username: { type: String, required: true, unique: true },
+  passwordHash: { type: String, required: true },
+});
+
+module.exports = {
+  Product: mongoose.model('Product', productSchema),
+  Order: mongoose.model('Order', orderSchema),
+  Admin: mongoose.model('Admin', adminSchema),
 };
