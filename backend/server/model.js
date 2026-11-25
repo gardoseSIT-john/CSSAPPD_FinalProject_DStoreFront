@@ -1,37 +1,95 @@
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 
-//Product Shi
+const TAGS = ['casual', 'jackets', 'shirts', 'pants', 'outdoor', 'accessories'];
+const PRODUCT_STATUSES = ['available', 'reserved', 'sold'];
+const PAYMENT_METHODS = ['cod', 'transfer'];
+const ORDER_STATUSES = ['pending', 'completed'];
+
+const nonEmpty = (message) => ({ validator: (v) => Array.isArray(v) && v.length > 0, message });
+
+// ---------- Product ----------
 const productSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  size: [String],
-  description: String,
-  tags: [String],            // e.g. "casual", "jackets"
-  images: [String],          // URLs; first one is the ProductCell image
-  price: Number,
+  name: { type: String, required: [true, 'Name is required'], trim: true },
+  size: { type: [String], validate: nonEmpty('At least one size is required') },
+  description: { type: String, default: '' },
+  tags: [{ type: String, enum: { values: TAGS, message: '{VALUE} is not an allowed tag' } }],
+  images: { type: [String], validate: nonEmpty('At least one image is required') },
+  price: {
+    type: Number,
+    required: [true, 'Price is required'],
+    validate: { validator: (v) => v > 0, message: 'Price must be greater than 0' },
+  },
+  status: {
+    type: String,
+    enum: { values: PRODUCT_STATUSES, message: '{VALUE} is not a valid status' },
+    default: 'available',
+  },
+  isActive: { type: Boolean, default: true },
+  removedAt: { type: Date, default: null },
 });
 
-const orderSchema = new mongoose.Schema({
-  product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
-  size: String,
-  customerName: { type: String, required: true },
-  contact: String,
-  dropOff: { type: String, required: true },   // delivery / drop-off point
-  status: { type: String, enum: ['pending', 'completed'], default: 'pending' },
-  createdAt: { type: Date, default: Date.now },
+// ---------- Order ----------
+const orderItemSchema = new mongoose.Schema(
+  {
+    product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+    // snapshot: copied at order time so later product edits don't change old orders
+    name: { type: String, required: true },
+    size: { type: String, required: true },
+    price: { type: Number, required: true, min: 0 },
+    image: { type: String, required: true },
+    quantity: { type: Number, default: 1, min: 1 },
+  },
+  { _id: false },
+);
+
+const orderSchema = new mongoose.Schema(
+  {
+    reference: { type: String, unique: true },
+    items: { type: [orderItemSchema], validate: nonEmpty('An order needs at least one item') },
+    customerName: { type: String, required: [true, 'Customer name is required'], trim: true },
+    contactNumber: { type: String, required: [true, 'Contact number is required'], trim: true },
+    address: { type: String, required: [true, 'Address is required'], trim: true },
+    paymentMethod: {
+      type: String,
+      required: [true, 'Payment method is required'],
+      enum: { values: PAYMENT_METHODS, message: '{VALUE} is not a valid payment method' },
+    },
+    paymentReference: {
+      type: String,
+      trim: true,
+      required: [
+        function () { return this.paymentMethod === 'transfer'; },
+        'A transfer payment needs a reference',
+      ],
+    },
+    status: {
+      type: String,
+      enum: { values: ORDER_STATUSES, message: '{VALUE} is not a valid status' },
+      default: 'pending',
+    },
+  },
+  { timestamps: true },
+);
+
+// Reference number like DS-20261122-A1B2C3, created before validation runs
+orderSchema.pre('validate', function () {
+  if (!this.reference) {
+    const day = new Date().toISOString().slice(0, 10).replaceAll('-', '');
+    this.reference = `DS-${day}-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
+  }
 });
 
-module.exports = {
-  Product: mongoose.model('Product', productSchema),
-  Order: mongoose.model('Order', orderSchema),
-};
-
-//Admin Shi
+// ---------- Admin (unchanged) ----------
 const adminSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   passwordHash: { type: String, required: true },
 });
 
 module.exports = {
+  TAGS,
+  PRODUCT_STATUSES,
+  PAYMENT_METHODS,
   Product: mongoose.model('Product', productSchema),
   Order: mongoose.model('Order', orderSchema),
   Admin: mongoose.model('Admin', adminSchema),
