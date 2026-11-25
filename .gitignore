@@ -45,8 +45,8 @@ Thumbs.db
 
 # Secrets
 .env
-.env.*
-!.env.example
+backend/server/.env
+
 
 # Backend dependencies
 backend/server/node_modules/

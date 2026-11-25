@@ -1,14 +1,23 @@
+/*We updated the model in compliance to the target feature. (MAdded the ability to store Tags for searching,
+ aswell as boolean values for isActive. We also added a removedAt variable, will represent when the item's been removed for
+ Admin features.)
+
+*/
+
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 
-const TAGS = ['casual', 'jackets', 'shirts', 'pants', 'outdoor', 'accessories'];
+//This are like ENUMs(not like, it is ENUM), which are predefined values in an array. so TAGS[1] now refers to the item as casual. Any items 
+//with the value of TAGS[1] is now considered a casual clothing.
+// Why'd we do this?
+const TAGS = ['casual', 'jackets', 'shirts', 'pants', 'outdoor', 'accessories']; //Initial values, will change when needed
 const PRODUCT_STATUSES = ['available', 'reserved', 'sold'];
 const PAYMENT_METHODS = ['cod', 'transfer'];
 const ORDER_STATUSES = ['pending', 'completed'];
 
 const nonEmpty = (message) => ({ validator: (v) => Array.isArray(v) && v.length > 0, message });
 
-// ---------- Product ----------
+//Product Schema area:
 const productSchema = new mongoose.Schema({
   name: { type: String, required: [true, 'Name is required'], trim: true },
   size: { type: [String], validate: nonEmpty('At least one size is required') },
@@ -29,7 +38,7 @@ const productSchema = new mongoose.Schema({
   removedAt: { type: Date, default: null },
 });
 
-// ---------- Order ----------
+//Order part
 const orderItemSchema = new mongoose.Schema(
   {
     product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
@@ -71,8 +80,7 @@ const orderSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
-
-// Reference number like DS-20261122-A1B2C3, created before validation runs
+//Reference number is created first before validation runs(The job of crypto
 orderSchema.pre('validate', function () {
   if (!this.reference) {
     const day = new Date().toISOString().slice(0, 10).replaceAll('-', '');
@@ -80,7 +88,6 @@ orderSchema.pre('validate', function () {
   }
 });
 
-// ---------- Admin (unchanged) ----------
 const adminSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   passwordHash: { type: String, required: true },
