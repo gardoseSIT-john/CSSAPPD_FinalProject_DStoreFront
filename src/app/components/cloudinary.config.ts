@@ -1,4 +1,4 @@
 export const CLOUDINARY = {
-  cloudName: 'YOUR_CLOUD_NAME',
+  cloudName: 'kggzq6ec',
   uploadPreset: 'ds_storefront',
 };

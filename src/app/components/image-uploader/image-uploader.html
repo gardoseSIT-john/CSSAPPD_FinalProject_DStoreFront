@@ -1,14 +1,17 @@
 <div class="uploader">
-  <label for="image-files">Images (the first is the cell image)</label>
+  <label for="image-files">Images ({{ images().length }}/{{ maxImages }}; the first is the cell image)</label>
   <input
     id="image-files"
     type="file"
-    accept="image/*"
+    accept="image/jpeg,image/png,image/webp"
     multiple
-    [disabled]="uploading()"
+    [disabled]="uploading() || isFull()"
     (change)="onFiles($event)"
   />
 
+  @if (isFull()) {
+    <p role="status">Maximum of {{ maxImages }} images reached. Remove one to add another.</p>
+  }
   @if (uploading()) {
     <p role="status">Uploading…</p>
   }
@@ -25,10 +28,19 @@
         } @else {
           <button type="button" (click)="makeFirst($index)">Make first</button>
         }
-        <button type="button" (click)="remove($index)" [attr.aria-label]="'Remove image ' + ($index + 1)">
+        <button
+          type="button"
+          (click)="remove($index)"
+          [disabled]="images().length <= 1"
+          [attr.aria-label]="'Remove image ' + ($index + 1)"
+        >
           Remove
         </button>
       </li>
     }
   </ul>
+
+  @if (images().length === 1) {
+    <p class="hint">A product needs at least one image. Add another before removing this one.</p>
+  }
 </div>

@@ -24,6 +24,9 @@ async function main() {
   await check('price -5', new Product({ ...good, price: -5 }), true);
   await check('no images', new Product({ ...good, images: [] }), true);
   await check('valid product', new Product(good), false);
+  //Product check added for ImageTesting : F3
+  await check('6 images', new Product({ ...good, images: ['a', 'b', 'c', 'd', 'e', 'f'] }), true);
+  await check('5 images', new Product({ ...good, images: ['a', 'b', 'c', 'd', 'e'] }), false);
 
   // Scenario 2
   const p = new Product(good);

@@ -23,7 +23,14 @@ const productSchema = new mongoose.Schema({
   size: { type: [String], validate: nonEmpty('At least one size is required') },
   description: { type: String, default: '' },
   tags: [{ type: String, enum: { values: TAGS, message: '{VALUE} is not an allowed tag' } }],
-  images: { type: [String], validate: nonEmpty('At least one image is required') },
+  //images field edited to accomodate the Image updload
+  images: {
+  type: [String],
+  validate: [
+    nonEmpty('At least one image is required'),
+    { validator: (v) => v.length <= 5, message: 'A product can have at most 5 images' },
+  ],
+},
   price: {
     type: Number,
     required: [true, 'Price is required'],
