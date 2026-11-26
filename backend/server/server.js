@@ -35,17 +35,24 @@ function handleError(res, e) {
   res.status(500).json({ error: 'Server error' });
 }
 
-// Removed products are hidden, not deleted. $ne:false also matches older documents without the field.
-const visible = { isActive: { $ne: false } };
+//F[4] Updates
+// Only these fields can be set through add/update. Flags change through hide, unhide and remove.
+const EDITABLE = ['name', 'size', 'description', 'tags', 'images', 'price', 'status'];
+const pick = (body = {}) => Object.fromEntries(EDITABLE.filter((k) => k in body).map((k) => [k, body[k]]));
+
+// What the public may see
+const listed = { status: 'available', isActive: true, removedAt: null }; // shop list
+const viewable = { isActive: true, removedAt: null };                    // product page (any status)
 
 // ---------- Customer routes ----------
 app.get('/api/products', async (_req, res) => {
-  try { res.json(await Product.find(visible)); } catch (e) { handleError(res, e); }
+  try { res.json(await Product.find(listed)); } catch (e) { handleError(res, e); }
 });
 
 app.get('/api/products/:id', async (req, res) => {
   try {
-    const p = await Product.findOne({ _id: req.params.id, ...visible });
+    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ error: 'Not found' });
+    const p = await Product.findOne({ _id: req.params.id, ...viewable });
     p ? res.json(p) : res.status(404).json({ error: 'Not found' });
   } catch (e) { handleError(res, e); }
 });
@@ -53,14 +60,15 @@ app.get('/api/products/:id', async (req, res) => {
 // Name, price and image are copied from the database, never trusted from the browser
 app.post('/api/orders', async (req, res) => {
   try {
-    const { items, customerName, contactNumber, address, paymentMethod, paymentReference } = req.body;
+    const { items, customerName, contactNumber, address, paymentMethod, paymentReference } = req.body ?? {};
     if (!Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ error: 'Validation failed', details: { items: 'An order needs at least one item' } });
     }
 
     const lines = [];
     for (const it of items) {
-      const p = await Product.findOne({ _id: it.product, ...visible, status: 'available' });
+      if (!mongoose.isValidObjectId(it.product)) return res.status(400).json({ error: 'A product is no longer available' });
+      const p = await Product.findOne({ _id: it.product, ...listed });
       if (!p) return res.status(400).json({ error: 'A product is no longer available' });
       lines.push({
         product: p._id,
@@ -82,22 +90,19 @@ app.post('/api/orders', async (req, res) => {
 // ---------- Admin login ----------
 app.post('/api/login', async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, password } = req.body ?? {};
     const admin = await Admin.findOne({ username });
-    console.log('Login attempt:', username, 'found:', !!admin);
-
     const ok = admin && (await bcrypt.compare(password ?? '', admin.passwordHash));
     if (!ok) return res.status(401).json({ error: 'Invalid credentials' });
 
-    const token = jwt.sign({ sub: admin._id, role: 'admin' }, process.env.JWT_SECRET, {
-      expiresIn: '2h',
-    });
+    const token = jwt.sign({ sub: admin._id, role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '2h' });
     res.json({ token });
   } catch (e) {
     console.error('Login error:', e.message);
     res.status(500).json({ error: 'Server error' });
   }
 });
+
 
 // ---------- Middleware for protected routes ----------
 function requireAdmin(req, res, next) {
@@ -106,29 +111,59 @@ function requireAdmin(req, res, next) {
   if (!token) return res.status(401).json({ error: 'Login required' });
   try {
     req.admin = jwt.verify(token, process.env.JWT_SECRET);
+    if (req.admin.role !== 'admin') throw new Error('not admin');
     next();
   } catch {
     res.status(401).json({ error: 'Invalid or expired token' });
   }
 }
 
+
 // ---------- Admin routes ----------
-app.post('/api/products', requireAdmin, async (req, res) => {
-  try { res.status(201).json(await Product.create(req.body)); } catch (e) { handleError(res, e); }
+// Every product, including hidden and removed, with their flags
+app.get('/api/admin/products', requireAdmin, async (_req, res) => {
+  try { res.json(await Product.find().sort({ _id: -1 })); } catch (e) { handleError(res, e); }
 });
 
+app.post('/api/products', requireAdmin, async (req, res) => {
+  try { res.status(201).json(await Product.create(pick(req.body))); } catch (e) { handleError(res, e); }
+});
+
+// Load, assign, save: the whole document is validated, not only the changed fields
 app.put('/api/products/:id', requireAdmin, async (req, res) => {
   try {
-    const p = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-    p ? res.json(p) : res.status(404).json({ error: 'Not found' });
+    const p = await Product.findOne({ _id: req.params.id, removedAt: null });
+    if (!p) return res.status(404).json({ error: 'Not found' });
+    p.set(pick(req.body));
+    res.json(await p.save());
   } catch (e) { handleError(res, e); }
 });
 
-// Soft delete: hide the product, keep the document so old orders stay intact
+// Hide / unhide: toggles isActive without touching removedAt
+function setActive(value) {
+  return async (req, res) => {
+    try {
+      const p = await Product.findOneAndUpdate(
+        { _id: req.params.id, removedAt: null },
+        { isActive: value },
+        { new: true },
+      );
+      p ? res.json(p) : res.status(404).json({ error: 'Not found' });
+    } catch (e) { handleError(res, e); }
+  };
+}
+app.patch('/api/products/:id/hide', requireAdmin, setActive(false));
+app.patch('/api/products/:id/unhide', requireAdmin, setActive(true));
+
+// Soft delete: the product is marked removed, but the document is kept so old orders stay intact
 app.delete('/api/products/:id', requireAdmin, async (req, res) => {
   try {
-    await Product.findByIdAndUpdate(req.params.id, { isActive: false, removedAt: new Date() });
-    res.status(204).end();
+    const p = await Product.findOneAndUpdate(
+      { _id: req.params.id, removedAt: null },
+      { removedAt: new Date() },
+      { new: true },
+    );
+    p ? res.json(p) : res.status(404).json({ error: 'Not found' });
   } catch (e) { handleError(res, e); }
 });
 
@@ -141,6 +176,13 @@ app.patch('/api/orders/:id/complete', requireAdmin, async (req, res) => {
     const o = await Order.findByIdAndUpdate(req.params.id, { status: 'completed' }, { new: true });
     o ? res.json(o) : res.status(404).json({ error: 'Not found' });
   } catch (e) { handleError(res, e); }
+});
+
+// Malformed JSON bodies get a 400 instead of an HTML error page
+app.use((err, _req, res, _next) => {
+  if (err.type === 'entity.parse.failed') return res.status(400).json({ error: 'Invalid JSON body' });
+  console.error(err);
+  res.status(500).json({ error: 'Server error' });
 });
 
 // Start only after the DB connects; stop with a clear message if it cannot

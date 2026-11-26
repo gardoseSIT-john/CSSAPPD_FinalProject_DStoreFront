@@ -1,7 +1,6 @@
 import { inject, Service } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Product,ProductInput } from './product.model';
-import { Order, PendingOrder } from './order.model';
+import { Product, ProductInput } from './product.model';
 
 @Service()
 export class ProductService {
@@ -12,28 +11,31 @@ export class ProductService {
     return this.http.get<Product[]>(`${this.api}/products`);
   }
 
+  getAllAdmin() {
+    return this.http.get<Product[]>(`${this.api}/admin/products`);
+  }
+
   getOne(id: string) {
     return this.http.get<Product>(`${this.api}/products/${id}`);
   }
+
   create(product: ProductInput) {
-  return this.http.post<Product>(`${this.api}/products`, product);
-}
+    return this.http.post<Product>(`${this.api}/products`, product);
+  }
 
-update(id: string, product: ProductInput) {
-  return this.http.put<Product>(`${this.api}/products/${id}`, product);
-}
+  update(id: string, product: ProductInput) {
+    return this.http.put<Product>(`${this.api}/products/${id}`, product);
+  }
 
-remove(id: string) {
-  return this.http.delete<void>(`${this.api}/products/${id}`);
-}
+  hide(id: string) {
+    return this.http.patch<Product>(`${this.api}/products/${id}/hide`, {});
+  }
 
-//Order stuff
-getPending() {
-  return this.http.get<PendingOrder[]>(`${this.api}/orders`);
-}
+  unhide(id: string) {
+    return this.http.patch<Product>(`${this.api}/products/${id}/unhide`, {});
+  }
 
-complete(id: string) {
-  return this.http.patch<Order>(`${this.api}/orders/${id}/complete`, {});
-}
-
+  remove(id: string) {
+    return this.http.delete<Product>(`${this.api}/products/${id}`);
+  }
 }

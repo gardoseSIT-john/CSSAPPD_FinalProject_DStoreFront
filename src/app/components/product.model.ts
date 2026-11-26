@@ -6,6 +6,10 @@ export interface Product {
   tags: string[];
   images: string[];
   price: number;
+  //Added in F[4]
+  status: 'available' | 'reserved' | 'sold';
+  isActive: boolean;
+  removedAt: string | null;
 }
 export interface ProductInput {
   name: string;
