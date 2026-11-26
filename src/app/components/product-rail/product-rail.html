@@ -1,0 +1,39 @@
+<div class="viewport">
+  <button type="button" class="round-btn arrow left" [disabled]="atStart()" (click)="scroll(-1)" aria-label="Previous products">&#8592;</button>
+
+  <div class="track" #track (scroll)="updateArrows()">
+    @for (p of products(); track p._id) {
+      <a class="panel" [routerLink]="['/product', p._id]">
+        @if (p.images.length > 0) {
+          <img [src]="p.images[0]" [alt]="p.name" loading="lazy" />
+        } @else {
+          <span class="ph">{{ p.name.charAt(0) }}</span>
+        }
+
+        @if (p.tags.length > 0) {
+          <span class="tag">{{ p.tags[0] }}</span>
+        }
+        @if (p.size.length > 0) {
+          <span class="sizes">{{ p.size.join(' · ') }}</span>
+        }
+
+        <div class="overlay">
+          <div class="meta">
+            <h3>{{ p.name }}</h3>
+            @if (p.description) {
+              <p class="desc">{{ p.description }}</p>
+            }
+          </div>
+          <div class="buy">
+            <span class="price">{{ p.price | currency: 'PHP' }}</span>
+            <span class="view">View</span>
+          </div>
+        </div>
+      </a>
+    } @empty {
+      <p class="empty">No products yet.</p>
+    }
+  </div>
+
+  <button type="button" class="round-btn arrow right" [disabled]="atEnd()" (click)="scroll(1)" aria-label="Next products">&#8594;</button>
+</div>

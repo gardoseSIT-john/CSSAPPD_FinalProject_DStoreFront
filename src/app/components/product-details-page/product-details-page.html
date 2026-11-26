@@ -1,9 +1,9 @@
-<nav class="back">
-  <a routerLink="/">← Back to shop</a>
+<nav class="back wrap">
+  <a routerLink="/" fragment="shop">&larr; Back to shop</a>
 </nav>
 
 @if (product(); as p) {
-  <article class="details">
+  <article class="details wrap">
     <section class="gallery" aria-label="Product images">
       @if (p.images.length > 0) {
         <img class="main" [src]="p.images[selected()]" [alt]="p.name" />
@@ -29,20 +29,26 @@
     </section>
 
     <section class="info">
+      @if (p.tags.length > 0) {
+        <p class="kicker">{{ p.tags.join(' · ') }}</p>
+      }
       <h1>{{ p.name }}</h1>
       <p class="price">{{ p.price | currency: 'PHP' }}</p>
 
       @if (p.size.length > 0) {
-        <p>Sizes: {{ p.size.join(', ') }}</p>
-      }
-      @if (p.tags.length > 0) {
-        <p class="tags">Tags: {{ p.tags.join(', ') }}</p>
+        <p class="label">Sizes</p>
+        <ul class="sizes">
+          @for (s of p.size; track s) {
+            <li>{{ s }}</li>
+          }
+        </ul>
       }
 
-      <h2>Description</h2>
+      <h2 class="label">Description</h2>
       <p class="description">{{ p.description }}</p>
 
-      <button type="button" class="order-btn" (click)="ordering.set(true)">Order now</button>
+      <button type="button" class="order-btn btn-solid" (click)="ordering.set(true)">Order now</button>
+      <p class="fine">You pick your size and drop-off point next.</p>
     </section>
   </article>
 
@@ -50,7 +56,10 @@
     <app-order-page [product]="p" (closed)="ordering.set(false)" />
   }
 } @else if (product() === null) {
-  <p>Product not found. <a routerLink="/">Return to the shop</a>.</p>
+  <div class="state wrap">
+    <p>Product not found.</p>
+    <a routerLink="/" class="btn-ghost">Return to the shop</a>
+  </div>
 } @else {
-  <p>Loading…</p>
+  <p class="state wrap">Loading…</p>
 }

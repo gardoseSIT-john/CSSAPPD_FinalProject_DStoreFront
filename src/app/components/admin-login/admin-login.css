@@ -1,27 +1,83 @@
 .login {
-  max-width: 24rem;
-  margin: 3rem auto;
-  padding: 1.5rem;
+  max-width: 26rem;
+  margin: 4rem auto;
+  padding: 32px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--panel);
 }
+
+h1 {
+  margin: 0 0 24px;
+  font-family: var(--display);
+  font-size: 2.2rem;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
 .field {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  margin-bottom: 1rem;
+  gap: 8px;
+  margin-bottom: 18px;
 }
+
+label {
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
 input {
-  padding: 0.5rem;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  color: #fff;
   font-size: 1rem;
 }
+
+input:focus {
+  outline: none;
+  border-color: #fff;
+}
+
 button {
-  padding: 0.6rem 1.2rem;
-  font-size: 1rem;
-  background: #1a1a1a;
-  color: #fff;
-  border: none;
+  width: 100%;
+  margin-top: 6px;
+  padding: 14px;
+  border: 1px solid #fff;
+  border-radius: 999px;
+  background: #fff;
+  color: #000;
+  font-size: 0.76rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   cursor: pointer;
 }
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .error {
-  color: #b00020;
   margin: 0;
+  font-size: 0.78rem;
+  color: #ff6b6b;
+}
+
+a {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+a:hover {
+  color: #fff;
 }

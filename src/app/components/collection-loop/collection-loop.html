@@ -1,0 +1,27 @@
+@if (loop().length > 0) {
+  <div class="viewport">
+    <div class="track">
+      @for (tile of loop(); track $index) {
+        @let copy = $index >= tiles().length;
+        <button
+          type="button"
+          class="tile"
+          [attr.aria-hidden]="copy || null"
+          [attr.tabindex]="copy ? -1 : null"
+          [attr.aria-label]="'Show ' + tile.label"
+          (click)="picked.emit(tile.tag)"
+        >
+          @if (tile.image) {
+            <img [src]="tile.image" alt="" loading="lazy" />
+          } @else {
+            <span class="ph">{{ tile.label.charAt(0) }}</span>
+          }
+          <span class="label">{{ tile.label }}</span>
+          <span class="num">{{ tile.count }} {{ tile.count === 1 ? 'piece' : 'pieces' }}</span>
+        </button>
+      }
+    </div>
+  </div>
+} @else {
+  <p class="empty">Collections show up once products are added.</p>
+}

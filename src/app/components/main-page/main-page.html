@@ -1,18 +1,72 @@
-<header class="search">
-  <label for="search">Search products</label>
-  <input
-    id="search"
-    type="search"
-    placeholder="Search by name or tag"
-    [value]="query()"
-    (input)="onSearch($event)"
-  />
-</header>
+<app-hero-carousel [products]="products()" />
+<app-marquee-band [items]="brand.notices" />
 
-<main class="grid">
-  @for (p of filtered(); track p._id) {
-    <app-product-cell [product]="p" />
-  } @empty {
-    <p>No products match your search.</p>
-  }
-</main>
+<section id="collections" class="block">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <p class="kicker">Shop by collection</p>
+        <h2>Collections</h2>
+      </div>
+      <span class="count">Tap one to filter the shop</span>
+    </div>
+  </div>
+  <app-collection-loop [products]="products()" (picked)="pickTag($event)" />
+</section>
+
+<section id="featured" class="block">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <p class="kicker">Featured</p>
+        <h2>Featured pieces</h2>
+      </div>
+      <span class="count">{{ products().length }} pieces</span>
+    </div>
+  </div>
+  <app-product-rail [products]="products()" />
+</section>
+
+<section id="shop" class="block wrap">
+  <div class="section-head">
+    <div>
+      <p class="kicker">The shelf</p>
+      <h2>All products</h2>
+    </div>
+    <span class="count">{{ filtered().length }} of {{ products().length }}</span>
+  </div>
+
+  <div class="search">
+    <label for="search">Search products</label>
+    <div class="field">
+      <input
+        id="search"
+        type="search"
+        placeholder="Search by name or tag"
+        [value]="query()"
+        (input)="onSearch($event)"
+      />
+      @if (query()) {
+        <button type="button" class="clear" (click)="clearSearch()">Clear</button>
+      }
+    </div>
+  </div>
+
+  <div class="grid">
+    @for (p of filtered(); track p._id) {
+      <app-product-cell [product]="p" />
+    } @empty {
+      @if (loadFailed()) {
+        <p class="empty">Could not reach the store server. Please try again later.</p>
+      } @else {
+        <p class="empty">No products match your search.</p>
+      }
+    }
+  </div>
+</section>
+
+<div class="big-band">
+  <app-marquee-band [items]="bigWords" size="large" [reverse]="true" />
+</div>
+
+<app-ceo-note />

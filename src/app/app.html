@@ -1,3 +1,11 @@
-<!--Waga-->
-waga
-<router-outlet />
+@if (showIntro()) {
+  <app-intro (finished)="onIntroDone()" />
+}
+
+<app-site-header />
+
+<main>
+  <router-outlet />
+</main>
+
+<app-site-footer />

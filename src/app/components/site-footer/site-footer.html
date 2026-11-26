@@ -1,0 +1,20 @@
+<footer class="foot">
+  <div class="wrap top">
+    <div>
+      <p class="mark">{{ brand.name }}</p>
+      <p class="note">{{ brand.tagline }}</p>
+    </div>
+
+    <nav class="links" aria-label="Footer">
+      <a routerLink="/" fragment="shop">Shop</a>
+      <a routerLink="/" fragment="collections">Collections</a>
+      <a routerLink="/" fragment="featured">Featured</a>
+      <a routerLink="/admin">Admin</a>
+    </nav>
+  </div>
+
+  <div class="wrap legal">
+    <span>&copy; {{ year }} {{ brand.name }}. All rights reserved.</span>
+    <span>Orders delivered to your chosen drop-off point</span>
+  </div>
+</footer>

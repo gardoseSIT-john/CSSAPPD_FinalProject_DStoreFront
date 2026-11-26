@@ -1,0 +1,59 @@
+<section class="hero" [class.paused]="paused()" aria-roledescription="carousel" aria-label="Featured products">
+  <div class="slides">
+    @for (p of slides(); track p._id) {
+      <figure class="slide" [class.active]="$index === index()" [attr.aria-hidden]="$index !== index()">
+        <img [src]="p.images[0]" [alt]="$index === index() ? p.name : ''" />
+      </figure>
+    } @empty {
+      <div class="slide active blank"></div>
+    }
+  </div>
+  <div class="shade"></div>
+
+  <div class="content wrap">
+    <div class="copy">
+      <p class="kicker">Shop the latest</p>
+      <h1 class="mark">{{ brand.name }}</h1>
+      <p class="tagline">{{ brand.tagline }}</p>
+      <div class="cta">
+        <a class="btn-solid" routerLink="/" fragment="shop">Shop now</a>
+        @if (current(); as c) {
+          <a class="btn-ghost" [routerLink]="['/product', c._id]">View piece</a>
+        }
+      </div>
+    </div>
+
+    @if (current(); as c) {
+      <a class="now" [routerLink]="['/product', c._id]">
+        <span class="kicker">Now showing &middot; {{ pad(index() + 1) }} / {{ pad(slides().length) }}</span>
+        <span class="name">{{ c.name }}</span>
+        <span class="price">{{ c.price | currency: 'PHP' }}</span>
+      </a>
+    }
+  </div>
+
+  @if (slides().length > 1) {
+    <div class="controls wrap">
+      <div class="dots">
+        @for (p of slides(); track p._id) {
+          <button
+            type="button"
+            class="dot"
+            [class.active]="$index === index()"
+            [class.done]="$index < index()"
+            [attr.aria-current]="$index === index()"
+            [attr.aria-label]="'Show ' + p.name"
+            (click)="go($index)"
+          >
+            <span class="fill" (animationend)="next()"></span>
+          </button>
+        }
+      </div>
+
+      <div class="arrows">
+        <button type="button" class="round-btn" (click)="prev()" aria-label="Previous product">&#8592;</button>
+        <button type="button" class="round-btn" (click)="next()" aria-label="Next product">&#8594;</button>
+      </div>
+    </div>
+  }
+</section>

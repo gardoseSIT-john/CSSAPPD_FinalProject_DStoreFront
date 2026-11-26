@@ -1,0 +1,62 @@
+.foot {
+  border-top: 1px solid var(--line);
+  padding: 56px 0 28px;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 28px;
+  flex-wrap: wrap;
+  padding-bottom: 36px;
+  /* hairline that lines up with the text, not the padding */
+  background: linear-gradient(var(--line), var(--line)) bottom center / calc(100% - 2 * var(--gutter)) 1px no-repeat;
+}
+
+.mark {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(3rem, 10vw, 6.5rem);
+  line-height: 0.9;
+  letter-spacing: 0.03em;
+}
+
+.note {
+  margin: 12px 0 0;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+}
+
+.links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.74rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.links a:hover {
+  color: #fff;
+}
+
+.legal {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-top: 22px;
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}

@@ -1,0 +1,130 @@
+:host {
+  display: block;
+}
+
+.viewport {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+}
+
+/* the strip moves on its own and stops while you point at it */
+.track {
+  display: flex;
+  gap: 14px;
+  width: max-content;
+  padding: 4px 0;
+  animation: slide 55s linear infinite;
+}
+
+.viewport:hover .track,
+.viewport:focus-within .track {
+  animation-play-state: paused;
+}
+
+.tile {
+  position: relative;
+  flex: 0 0 auto;
+  width: 230px;
+  aspect-ratio: 3 / 4;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--panel);
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tile img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(100%) brightness(0.7);
+  transition: filter 0.5s ease, transform 0.6s ease;
+}
+
+.tile:hover img,
+.tile:focus-visible img {
+  filter: none;
+  transform: scale(1.05);
+}
+
+.tile::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0) 55%);
+}
+
+.ph {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--display);
+  font-size: 6rem;
+  text-transform: uppercase;
+  color: #2a2a2a;
+}
+
+.label,
+.num {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  z-index: 1;
+}
+
+.label {
+  bottom: 36px;
+  font-family: var(--display);
+  font-size: 1.6rem;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.num {
+  bottom: 15px;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.empty {
+  padding: 40px var(--gutter);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+/* half the strip plus half a gap = exactly one full set of tiles */
+@keyframes slide {
+  to { transform: translateX(calc(-50% - 7px)); }
+}
+
+@media (max-width: 640px) {
+  .tile {
+    width: 170px;
+  }
+
+  .label {
+    font-size: 1.3rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viewport {
+    overflow-x: auto;
+  }
+
+  .track {
+    animation: none;
+  }
+}

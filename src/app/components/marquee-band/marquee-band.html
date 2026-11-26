@@ -1,0 +1,14 @@
+<div class="band" [class.large]="size() === 'large'" [class.reverse]="reverse()">
+  <ul class="sr-only">
+    @for (item of items(); track $index) {
+      <li>{{ item }}</li>
+    }
+  </ul>
+
+  <div class="track" aria-hidden="true">
+    @for (item of loop(); track $index) {
+      <span class="item">{{ item }}</span>
+      <span class="star">&#10022;</span>
+    }
+  </div>
+</div>

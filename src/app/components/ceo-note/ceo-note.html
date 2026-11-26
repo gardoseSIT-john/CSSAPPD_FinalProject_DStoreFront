@@ -1,0 +1,36 @@
+<section class="note" [class.seen]="seen()" aria-labelledby="ceo-heading">
+  <div class="wrap grid">
+    <figure class="portrait">
+      <span class="frame-back" aria-hidden="true"></span>
+      <div class="frame">
+        @if (photoFailed()) {
+          <span class="initials" aria-hidden="true">{{ initials }}</span>
+        } @else {
+          <img [src]="ceo.photo" [alt]="ceo.name + ', ' + ceo.title" (error)="photoFailed.set(true)" />
+        }
+      </div>
+      <figcaption class="side">{{ brand.name }} &mdash; {{ ceo.title }}</figcaption>
+    </figure>
+
+    <div class="letter">
+      <p class="kicker">A note from our CEO</p>
+      <span class="quote-mark" aria-hidden="true">&ldquo;</span>
+      <h2 id="ceo-heading">{{ ceo.heading }}</h2>
+      <p class="message">{{ ceo.message }}</p>
+      <p class="sign-off">{{ ceo.signOff }}</p>
+
+      <div class="signature" [class.ink-dark]="ceo.signatureInk === 'dark'">
+        @if (signatureFailed()) {
+          <span class="script">{{ ceo.name }}</span>
+        } @else {
+          <img [src]="ceo.signature" [alt]="'Signature of ' + ceo.name" (error)="signatureFailed.set(true)" />
+        }
+      </div>
+
+      <div class="signer">
+        <span class="name">{{ ceo.name }}</span>
+        <span class="title">{{ ceo.title }}, {{ brand.name }}</span>
+      </div>
+    </div>
+  </div>
+</section>

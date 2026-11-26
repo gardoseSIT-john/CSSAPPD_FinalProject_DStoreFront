@@ -1,13 +1,19 @@
 <a class="cell" [routerLink]="['/product', product()._id]">
-  @if (product().images.length > 0) {
-    <img [src]="product().images[0]" [alt]="product().name" />
-  } @else {
-    <div class="placeholder" role="img" aria-label="No image available"></div>
-  }
+  <div class="media">
+    @if (product().images.length > 0) {
+      <img [src]="product().images[0]" [alt]="product().name" loading="lazy" />
+      @if (product().images.length > 1) {
+        <!-- the second picture fades in on hover -->
+        <img class="alt" [src]="product().images[1]" alt="" loading="lazy" />
+      }
+    } @else {
+      <div class="placeholder" role="img" aria-label="No image available"></div>
+    }
 
-  @if (product().size.length > 0) {
-    <span class="size">{{ product().size.join(', ') }}</span>
-  }
+    @if (product().size.length > 0) {
+      <span class="size">{{ product().size.join(' · ') }}</span>
+    }
+  </div>
 
   <div class="row">
     <span class="name">{{ product().name }}</span>

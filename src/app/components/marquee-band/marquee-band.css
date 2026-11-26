@@ -1,0 +1,78 @@
+:host {
+  display: block;
+}
+
+/* small band: white strip with black text, under the hero */
+.band {
+  position: relative;
+  overflow: hidden;
+  background: #fff;
+  color: #000;
+}
+
+.track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  animation: scroll 38s linear infinite;
+}
+
+.band:hover .track {
+  animation-play-state: paused;
+}
+
+.reverse .track {
+  animation-direction: reverse;
+}
+
+.item {
+  padding: 15px 20px;
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.star {
+  font-size: 0.8rem;
+}
+
+/* large band: huge outlined words */
+.large {
+  background: transparent;
+  color: #fff;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.large .track {
+  animation-duration: 60s;
+}
+
+.large .item {
+  padding: 18px 32px;
+  font-family: var(--display);
+  font-size: clamp(3rem, 9vw, 7rem);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.6);
+}
+
+.large .star {
+  font-size: 2rem;
+  color: var(--accent);
+}
+
+@keyframes scroll {
+  to { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation: none;
+  }
+}
