@@ -7,7 +7,14 @@
   <article class="details">
     <section class="gallery" aria-label="Product images">
       @if (p.images.length > 0) {
-        <img class="main" [src]="p.images[selected()]" [alt]="p.name" />
+        <img
+          class="main"
+          [ngSrc]="src(p.images[selected()], IMG.detail)"
+          [alt]="p.name"
+          width="800"
+          height="800"
+          priority
+        />
         @if (p.images.length > 1) {
           <ul class="thumbs">
             @for (img of p.images; track $index) {
@@ -18,7 +25,7 @@
                   [attr.aria-label]="'Show image ' + ($index + 1)"
                   [attr.aria-current]="$index === selected()"
                 >
-                  <img [src]="img" alt="" />
+                  <img [ngSrc]="src(img, IMG.thumb)" [alt]="p.name" width="64" height="64" />
                 </button>
               </li>
             }
@@ -43,7 +50,17 @@
       <h2>Description</h2>
       <p class="description">{{ p.description }}</p>
 
-      <button type="button" class="order-btn" (click)="ordering.set(true)">Order now</button>
+      @if (p.status !== 'available') {
+        <p role="status"><strong>This item is {{ p.status }}.</strong></p>
+      }
+      <button
+        type="button"
+        class="order-btn"
+        [disabled]="p.status !== 'available'"
+        (click)="ordering.set(true)"
+      >
+        Order now
+      </button>
     </section>
   </article>
 

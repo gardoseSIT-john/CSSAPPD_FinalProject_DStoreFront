@@ -1,6 +1,6 @@
 <a class="cell" [routerLink]="['/product', product()._id]">
   @if (product().images.length > 0) {
-    <img [src]="product().images[0]" [alt]="product().name" />
+    <img [ngSrc]="src()" [alt]="product().name" width="400" height="400" />
   } @else {
     <div class="placeholder" role="img" aria-label="No image available"></div>
   }
