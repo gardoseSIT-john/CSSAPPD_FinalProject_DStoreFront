@@ -1,0 +1,15 @@
+.banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem;
+  padding: 0.75rem 1rem;
+  background: #fdecea;
+  color: #7a1c1c;
+  border: 1px solid #b00020;
+  border-radius: 6px;
+}
+.banner p {
+  margin: 0;
+}

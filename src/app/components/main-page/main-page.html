@@ -7,12 +7,21 @@
     [value]="query()"
     (input)="onSearch($event)"
   />
+  @if (tag(); as t) {
+    <p role="status">Showing: {{ t }} <a routerLink="/">Clear</a></p>
+  }
 </header>
 
-<main class="grid">
-  @for (p of filtered(); track p._id) {
-    <app-product-cell [product]="p" />
-  } @empty {
-    <p>No products match your search.</p>
-  }
-</main>
+<app-error-banner (retry)="load()" />
+
+@if (loading()) {
+  <p class="status" role="status">Loading…</p>
+} @else if (!failed()) {
+  <main class="grid">
+    @for (p of filtered(); track p._id) {
+      <app-product-cell [product]="p" />
+    } @empty {
+      <p>No products match your search.</p>
+    }
+  </main>
+}

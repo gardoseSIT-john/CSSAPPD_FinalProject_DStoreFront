@@ -1,11 +1,12 @@
 import { inject, Service } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Product, ProductInput } from './product.model';
+import { API_URL } from './api.config';
 
 @Service()
 export class ProductService {
   private readonly http = inject(HttpClient);
-  private readonly api = 'http://localhost:3000/api';
+  private readonly api = API_URL;
 
   getAll() {
     return this.http.get<Product[]>(`${this.api}/products`);
